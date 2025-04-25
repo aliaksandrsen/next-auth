@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  // CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -23,6 +22,7 @@ import { passwordMatchSchema } from '@/validation/passwordMatchSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { registerUser } from './actions';
 
 const formSchema = z
   .object({
@@ -40,8 +40,14 @@ export default function Register() {
     },
   });
 
-  const handleSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
+  const handleSubmit = async (data: z.infer<typeof formSchema>) => {
+    const response = await registerUser({
+      email: '',
+      password: data.password,
+      passwordConfirm: data.passwordConfirm,
+    });
+
+    console.log('Response:', response);
   };
 
   return (

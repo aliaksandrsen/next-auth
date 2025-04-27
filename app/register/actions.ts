@@ -1,8 +1,10 @@
 'use server';
 
-// import { db } from '@/db/drizzle';
+import { db } from '@/db/drizzle';
 import { passwordMatchSchema } from '@/validation/passwordMatchSchema';
 import { z } from 'zod';
+import { hash } from 'bcryptjs';
+import { users } from '@/db/usersSchema';
 
 export const registerUser = async ({
   email,
@@ -13,26 +15,40 @@ export const registerUser = async ({
   password: string;
   passwordConfirm: string;
 }) => {
-  // const result = await db.select();
-  // console.log(' result:', result);
+  try {
+    const newUserSchema = z
+      .object({
+        email: z.string().email(),
+      })
+      .and(passwordMatchSchema);
 
-  const newUserSchema = z
-    .object({
-      email: z.string().email(),
-    })
-    .and(passwordMatchSchema);
+    const newUserValues = newUserSchema.safeParse({
+      email,
+      password,
+      passwordConfirm,
+    });
 
-  const newUserValues = newUserSchema.safeParse({
-    email,
-    password,
-    passwordConfirm,
-  });
+    if (!newUserValues.success) {
+      return {
+        error: newUserValues.error.issues[0]?.message ?? 'An error occurred',
+      };
+    }
 
-  if (!newUserValues.success) {
+    const hashedPassword = await hash(password, 10);
+
+    await db.insert(users).values({
+      email,
+      password: hashedPassword,
+    });
+  } catch (e: unknown) {
+    const error = e as { code?: string };
+    if (error.code === '23505') {
+      return {
+        error: 'An account is already registered with this email address',
+      };
+    }
     return {
-      error: newUserValues.error.issues[0]?.message ?? 'An error occurred',
+      error: 'An error occurred.',
     };
   }
-
-  return newUserValues;
 };

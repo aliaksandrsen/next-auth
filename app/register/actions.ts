@@ -1,5 +1,6 @@
 'use server';
 
+// import { db } from '@/db/drizzle';
 import { passwordMatchSchema } from '@/validation/passwordMatchSchema';
 import { z } from 'zod';
 
@@ -12,6 +13,9 @@ export const registerUser = async ({
   password: string;
   passwordConfirm: string;
 }) => {
+  // const result = await db.select();
+  // console.log(' result:', result);
+
   const newUserSchema = z
     .object({
       email: z.string().email(),

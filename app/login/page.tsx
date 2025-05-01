@@ -55,7 +55,7 @@ export default function Login() {
       });
       return;
     } else {
-      router.push('/my-accaunt');
+      router.push('/my-account');
     }
   };
 

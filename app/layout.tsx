@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { auth } from '@/auth';
-import LogoutButton from './logout-button';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -18,24 +16,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await auth();
-
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <div>
-          {session?.user?.email ? (
-            <div>
-              {session.user.email}
-              <LogoutButton />
-            </div>
-          ) : (
-            'No currently logged in user'
-          )}
-        </div>
-
-        {children}
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }

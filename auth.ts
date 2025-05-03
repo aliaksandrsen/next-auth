@@ -31,8 +31,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           .from(users)
           .where(eq(users.email, credentials?.email as string));
 
-        console.log(' authorize: user:', user);
-
         if (!user) {
           throw new Error('Iccorrect credentials');
         } else {

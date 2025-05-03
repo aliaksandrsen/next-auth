@@ -9,7 +9,6 @@ export default async function LoggedInLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
-  console.log(' session:', session);
 
   if (!session?.user?.id) {
     redirect('/login');

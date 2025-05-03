@@ -48,7 +48,6 @@ export default function Register() {
       password: data.password,
       passwordConfirm: data.passwordConfirm,
     });
-    console.log(' handleSubmit response:', response);
 
     if (response?.error) {
       form.setError('email', {

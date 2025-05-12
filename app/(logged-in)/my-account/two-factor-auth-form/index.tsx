@@ -11,7 +11,7 @@ export default function TwoFactorAuthForm({
   const [isActivated, setIsActivated] = useState(twoFactorActivated);
   const [step, setStep] = useState(1);
 
-  const handleEnableClick = () => {
+  const handleEnableClick = async () => {
     setStep(2);
   };
 

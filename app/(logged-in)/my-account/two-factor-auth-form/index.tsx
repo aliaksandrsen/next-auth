@@ -5,6 +5,12 @@ import { useState } from 'react';
 import { get2faSecret } from './action';
 import { toast } from 'sonner';
 import { QRCodeSVG } from 'qrcode.react';
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from '@/components/ui/input-otp';
 
 export default function TwoFactorAuthForm({
   twoFactorActivated,
@@ -25,6 +31,10 @@ export default function TwoFactorAuthForm({
 
     setStep(2);
     setCode(response.twoFactorSecret ?? '');
+  };
+
+  const handleOTPSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
   };
 
   return (
@@ -61,6 +71,36 @@ export default function TwoFactorAuthForm({
                 Cancel
               </Button>
             </div>
+          )}
+          {step === 3 && (
+            <form onSubmit={handleOTPSubmit} className="flex flex-col gap-2">
+              <p className="text-xs text-muted-foreground">
+                Please enter the code from the Google Authenticator app to
+                activate Two-Factor Authentication.
+              </p>
+              <InputOTP maxLength={6}>
+                <InputOTPGroup>
+                  <InputOTPSlot index={0} />
+                  <InputOTPSlot index={1} />
+                  <InputOTPSlot index={2} />
+                </InputOTPGroup>
+                <InputOTPSeparator />
+                <InputOTPGroup>
+                  <InputOTPSlot index={3} />
+                  <InputOTPSlot index={4} />
+                  <InputOTPSlot index={5} />
+                </InputOTPGroup>
+              </InputOTP>
+              <Button type="submit">Submit and activate</Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setStep(1);
+                }}
+              >
+                Cancel
+              </Button>
+            </form>
           )}
         </div>
       )}

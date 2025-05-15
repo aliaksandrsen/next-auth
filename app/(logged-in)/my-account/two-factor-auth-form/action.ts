@@ -44,3 +44,56 @@ export const get2faSecret = async () => {
     ),
   };
 };
+
+export const activate2fa = async (token: string) => {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return {
+      error: 'Unauthorized',
+    };
+  }
+
+  const [user] = await db
+    .select({ twoFactorSecret: users.twoFactorAuthSecret })
+    .from(users)
+    .where(eq(users.id, parseInt(session.user.id)));
+
+  if (!user) {
+    return {
+      error: 'User not found',
+    };
+  }
+
+  if (user.twoFactorSecret) {
+    const tokenValid = authenticator.check(token, user.twoFactorSecret);
+
+    if (!tokenValid) {
+      return {
+        error: 'Invalid OTP',
+      };
+    }
+
+    await db
+      .update(users)
+      .set({ twoFactorAuthActivated: true })
+      .where(eq(users.id, parseInt(session.user.id)));
+  }
+};
+
+export const disable2fa = async () => {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return {
+      error: 'Unauthorized',
+    };
+  }
+
+  await db
+    .update(users)
+    .set({
+      twoFactorAuthActivated: false,
+    })
+    .where(eq(users.id, parseInt(session.user.id)));
+};
